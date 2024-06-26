@@ -1,28 +1,27 @@
-version: '3.8'
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-services:
-  bot:
-    build: .
-    depends_on:
-      - redis
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - API_TOKEN='7023961169:AAH9r3DW0KGgtBg7BKlWQ9vgCdp8doKYa-s'
-    volumes:
-      - .:/app
+DATABASE_URL = "postgresql://postgres:1@localhost:5433/django2"
 
-  celery_worker:
-    build: .
-    command: celery -A celery_app worker --loglevel=info
-    depends_on:
-      - redis
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - API_TOKEN='7023961169:AAH9r3DW0KGgtBg7BKlWQ9vgCdp8doKYa-s'
-    volumes:
-      - .:/app
+Base = declarative_base()
+try:
+    engine = create_engine(DATABASE_URL)
+    with engine.connect():
+        print("Connected to PostgreSQL successfully!")
+except OperationalError as e:
+    print(f"Failed to connect to PostgreSQL: {e}")
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-  redis:
-    image: "redis:alpine"
-    ports:
-      - "6379:6379"
+
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, unique=True, index=True)
+    username = Column(String, index=True)
+
+
+Base.metadata.create_all(bind=engine)
