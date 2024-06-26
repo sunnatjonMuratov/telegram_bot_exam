@@ -1,6 +1,6 @@
 import logging
 from aiogram import Bot, Dispatcher, Router
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from sqlalchemy.orm import Session
@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 
 API_TOKEN = '6990284778:AAE1jrcbF5shViJl2EZ6p4Hy0fOhK6ORBJw'
 
+# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 router = Router()
@@ -19,9 +20,20 @@ logging.basicConfig(level=logging.INFO)
 
 @router.message(Command('start'))
 async def send_welcome(message: Message):
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    buttons = [
+        KeyboardButton(text="Button 1"),
+        KeyboardButton(text="Button 2"),
+        KeyboardButton(text="Button 3"),
+        KeyboardButton(text="/news")
+    ]
+    keyboard.add(*buttons)
+    await message.answer("Welcome! Here are your options:", reply_markup=keyboard)
+
     user_id = message.from_user.id
     username = message.from_user.username
 
+    # Save user to the database
     session = SessionLocal()
     user = session.query(User).filter(User.user_id == user_id).first()
     if not user:
@@ -60,4 +72,3 @@ if __name__ == '__main__':
 
     fetch_jsonplaceholder_data.delay()
     main()
-
