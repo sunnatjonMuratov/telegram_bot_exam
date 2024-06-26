@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - API_TOKEN=${API_TOKEN}
+    volumes:
+      - .:/app
+
+  celery_worker:
+    build: .
+    command: celery -A celery_app worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - API_TOKEN=${API_TOKEN}
+    volumes:
+      - .:/app
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+#4) env file sozdat qlin
+#API_TOKEN=your_telegram_bot_token
+#
+#5) docker-compose build
+#docker-compose up
+#
+#
+#6) push to docker hub
+#docker login
+#docker tag your_image_name your_dockerhub_username/your_image_name:tag
+#docker push your_dockerhub_username/your_image_name:tag
+#
+#
+#
+#.
+#├── Dockerfile
+#├── requirements.txt
+#├── docker-compose.yml
+#├── .env
+#├── bot.py
+#├── celery_app.py
+#├── database.py
+#└── other files
+#
+#
