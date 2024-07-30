@@ -2,7 +2,6 @@ from celery import Celery
 import requests
 import json
 
-# Assuming Redis is running in a Docker container and you're using docker-compose
 app = Celery('tasks', broker='redis://redis:6379/0')
 
 
