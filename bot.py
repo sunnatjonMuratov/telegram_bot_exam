@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 
 API_TOKEN = '6990284778:AAE1jrcbF5shViJl2EZ6p4Hy0fOhK6ORBJw'
 
-# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 router = Router()
@@ -33,7 +32,6 @@ async def send_welcome(message: Message):
     user_id = message.from_user.id
     username = message.from_user.username
 
-    # Save user to the database
     session = SessionLocal()
     user = session.query(User).filter(User.user_id == user_id).first()
     if not user:
