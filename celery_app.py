@@ -16,6 +16,7 @@ def fetch_jsonplaceholder_data():
         'https://jsonplaceholder.typicode.com/users'
     ]
     data = {}
+    
     for url in urls:
         response = requests.get(url)
         key = url.split('/')[-1]
